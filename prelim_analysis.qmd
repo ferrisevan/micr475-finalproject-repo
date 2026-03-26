@@ -1,0 +1,103 @@
+---
+title: "prelim_analysis"
+authors: Evan Ferris and Laure Etienne
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Setup
+
+We load the tidyverse for data manipulation and visualization, and lubridate for handling dates.
+
+```{r setup}
+library(tidyverse)
+library(lubridate)
+library(readr)
+```
+
+## Data Import
+
+We load the three tables from the Portal Project Teaching Database: survey observations, plot metadata, and species information.
+
+```{r load-data}
+surveys <- read_csv("surveys.csv")
+plots   <- read_csv("plots.csv")
+species <- read_csv("species.csv")
+
+glimpse(surveys)
+glimpse(plots)
+glimpse(species)
+```
+
+## Data Tidying
+
+The surveys table contains missing values in \`species_id\`, \`sex\`, \`hindfoot_length\`, and \`weight\`. We remove rows where \`species_id\` is missing since these cannot be joined to the species table, and flag missing values in the numeric columns. We also combine the separate \`year\`, \`month\`, and \`day\` columns into a single date column, and convert \`sex\` and \`species_id\` to factors.
+
+```{r tidy-data}
+surveys_clean <- surveys |>
+  filter(!is.na(species_id)) |>
+  mutate(date = make_date(year, month, day)) |>
+  mutate(
+    sex        = factor(sex, levels = c("M", "F")),
+    species_id = factor(species_id)
+  )
+
+surveys_clean |>
+  summarise(
+    missing_sex             = sum(is.na(sex)),
+    missing_hindfoot_length = sum(is.na(hindfoot_length)),
+    missing_weight          = sum(is.na(weight))
+  )
+```
+
+## Joins
+
+We join the cleaned surveys table to the species table using \`species_id\` as the shared key. This adds genus, species name, and taxa information to each observation. We then join the plots table using \`plot_id\` to add plot treatment type.
+
+```{r join-data}
+surveys_joined <- surveys_clean |>
+  left_join(species, by = "species_id") |>
+  left_join(plots, by = "plot_id")
+
+glimpse(surveys_joined)
+```
+
+## Data Visualization
+
+We first plot the number of observations recorded each year to get asense of how sampling effort changed over time.
+
+```{r observations-over-time}
+
+```
+
+We next examine how observations are distributed across different taxonomic groups to understand the dataset.
+
+```{r observations-by-taxa}
+
+```
+
+The dataset is dominated by rodent observations, which shows the ecological focus of the Portal Project study site. We filter to rodents only for the remainder of the analysis.
+
+```{r filter-rodents}
+
+```
+
+We remove rows with missing values in the key analysis columns: weight, hindfoot_length, and sex. These rows cannot contribute meaningfully to our analysis across species and plot treatments.
+
+```{r handle-missing}
+
+```
+
+We now redo the graphs from earlier using the newly-cleaned rodent data, though we will not use the observations by taxa graph in the final analysis because we are only going to view rodents anyways.
+
+```{r observations-over-time-rodents}
+
+```
+
+```{r observations-by-taxa-rodents}
+
+```

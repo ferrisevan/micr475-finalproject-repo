@@ -71,33 +71,88 @@ glimpse(surveys_joined)
 We first plot the number of observations recorded each year to get asense of how sampling effort changed over time.
 
 ```{r observations-over-time}
-
+surveys_joined |>
+  group_by(year) |>
+  summarise(count = n()) |>
+  ggplot(aes(x = year, y = count)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Number of Observations Per Year",
+    x     = "Year",
+    y     = "Number of Observations"
+  ) +
+  theme_minimal()
 ```
 
 We next examine how observations are distributed across different taxonomic groups to understand the dataset.
 
 ```{r observations-by-taxa}
-
+surveys_joined |>
+  filter(!is.na(taxa)) |>
+  group_by(taxa) |>
+  summarise(count = n()) |>
+  ggplot(aes(x = reorder(taxa, -count), y = count, fill = taxa)) +
+  geom_col() +
+  labs(
+    title = "Number of Observations by Taxa",
+    x     = "Taxa",
+    y     = "Number of Observations"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
 
 The dataset is dominated by rodent observations, which shows the ecological focus of the Portal Project study site. We filter to rodents only for the remainder of the analysis.
 
 ```{r filter-rodents}
+rodents <- surveys_joined |>
+  filter(taxa == "Rodent")
 
+glimpse(rodents)
 ```
 
 We remove rows with missing values in the key analysis columns: weight, hindfoot_length, and sex. These rows cannot contribute meaningfully to our analysis across species and plot treatments.
 
 ```{r handle-missing}
+rodents_clean <- rodents |>
+  filter(
+    !is.na(weight),
+    !is.na(hindfoot_length),
+    !is.na(sex)
+  )
 
+nrow(rodents_clean)
 ```
 
 We now redo the graphs from earlier using the newly-cleaned rodent data, though we will not use the observations by taxa graph in the final analysis because we are only going to view rodents anyways.
 
 ```{r observations-over-time-rodents}
-
+rodents_clean |>
+  group_by(year) |>
+  summarise(count = n()) |>
+  ggplot(aes(x = year, y = count)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Number of Observations Per Year",
+    x     = "Year",
+    y     = "Number of Observations"
+  ) +
+  theme_minimal()
 ```
 
 ```{r observations-by-taxa-rodents}
-
+rodents_clean |>
+  group_by(taxa) |>
+  summarise(count = n()) |>
+  ggplot(aes(x = reorder(taxa, -count), y = count, fill = taxa)) +
+  geom_col() +
+  labs(
+    title = "Number of Observations by Taxa",
+    x     = "Taxa",
+    y     = "Number of Observations"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```

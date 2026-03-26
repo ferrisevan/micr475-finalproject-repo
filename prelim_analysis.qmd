@@ -1,6 +1,6 @@
 ---
 title: "prelim_analysis"
-authors: Evan Ferris and Laure Etienne
+authors: Evan Ferris, Laure Etienne
 format: html
 editor: visual
 ---

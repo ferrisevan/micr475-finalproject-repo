@@ -1,26 +1,86 @@
 ---
 title: "main_analysis"
+authors: evan, laure
 format: html
 editor: visual
 ---
 
-## Quarto
+## 1. Setup and Data Import
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Load the packages we need for data manipulation and visualization.
 
 ```{r}
-1 + 1
+library(tidyverse)
+library(readr)
+library(ggplot2)
 ```
 
-You can add options to executable code like this
+Read in the two CSV files from the data folder, and take a look at each table.
 
 ```{r}
-#| echo: false
-2 * 2
+surveys <- read_csv("data/surveys.csv")
+species <- read_csv("data/species.csv")
+
+glimpse(surveys)
+glimpse(species)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+## 2. Data Tidying and Cleaning
+
+Clean the surveys table by removing rows with no species ID, combining the separate year, month, and day columns into a single date, and converting sex and species ID to categorical variables.
+
+```{r}
+surveys_clean <- surveys |>
+  filter(!is.na(species_id)) |>
+  mutate(date = make_date(year, month, day)) |>
+  mutate(
+    sex        = factor(sex, levels = c("M", "F")),
+    species_id = factor(species_id)
+  )
+```
+
+Count how many rows are missing values in key columns so we know what we are working with before filtering.
+
+```{r}
+surveys_clean |>
+  summarise(
+    missing_sex             = sum(is.na(sex)),
+    missing_hindfoot_length = sum(is.na(hindfoot_length)),
+    missing_weight          = sum(is.na(weight))
+  )
+```
+
+## 3. Joining Tables
+
+Join the cleaned surveys table to the species table so each observation has the full species name, genus, and taxa group attached to it, then confirm the join worked and the new columns are present
+
+```{r}
+surveys_joined <- surveys_clean |>
+  left_join(species, by = "species_id")
+
+glimpse(surveys_joined)
+```
+
+## 4. Filter to Rodents and Handle Missing Values
+
+Filter down to only rodents since they make up the vast majority of observations and are the main focus of this dataset, then check how many rows we have.
+
+```{r}
+rodents <- surveys_joined |>
+  filter(taxa == "Rodent")
+
+nrow(rodents)
+```
+
+Remove rows missing weight, hindfoot length, or sex since these are the key variables we will be analyzing, then check how many rows remain after cleaning.
+
+```{r}
+rodents_clean <- rodents |>
+  filter(
+    !is.na(weight),
+    !is.na(hindfoot_length),
+    !is.na(sex)
+  )
+
+nrow(rodents_clean)
+```

@@ -61,7 +61,6 @@ We join the cleaned surveys table to the species table using \`species_id\` as t
 ```{r join-data}
 surveys_joined <- surveys_clean |>
   left_join(species, by = "species_id") |>
-  left_join(plots, by = "plot_id")
 
 glimpse(surveys_joined)
 ```

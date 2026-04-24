@@ -127,3 +127,71 @@ top5_species <- rodents_clean |>
 
 glimpse(top5_species)
 ```
+
+## 6. Visualization 1 - Weight Distribution by Species
+
+Plot weight distributions for the top 5 species using a density plot.
+
+Density represents the probability of observing a rodent at a given weight. Peaks show where most individuals cluster, wider curves mean more variation.
+
+```{r}
+rodents_clean |>
+  filter(species_label %in% top5_species) |>
+  mutate(species_label = fct_reorder(species_label, weight, median)) |>
+  ggplot(aes(x = weight, fill = species_label, color = species_label)) +
+  geom_density(alpha = 0.4) +
+  labs(
+    title = "Body Weight Distribution By Species",
+    x     = "Weight (g)",
+    y     = "Density",
+    fill  = "Species",
+    color = "Species"
+  )
+```
+
+## 7. Visualization 2 — Mean Weight Over Time by Species
+
+Calculate mean weight per year and plot trends over time to examine how rodent body weight has changed across the study period
+
+```{r}
+rodents_clean |>
+  group_by(year, species_label) |>
+  summarise(
+    mean_weight = mean(weight),
+    .groups     = "drop"
+  ) |>
+  filter(species_label %in% top5_species) |>
+  ggplot(aes(x = year, y = mean_weight, color = species_label)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Mean Rodent Body Weight Over Time by Species",
+    x     = "Year",
+    y     = "Mean Weight (g)",
+    color = "Species"
+  )
+```
+
+## 8. Visualization 3 — Mean Weight by Species and Sex
+
+Compare mean body weight between male and female rodents across the top 5 most common species to examine whether weight differs by sex
+
+```{r}
+rodents_clean |>
+  filter(species_label %in% top5_species) |>
+  group_by(species_label, sex) |>
+  summarise(
+    mean_weight = mean(weight),
+    .groups     = "drop"
+  ) |>
+  mutate(species_label = fct_reorder(species_label, mean_weight, max)) |>
+  ggplot(aes(x = species_label, y = mean_weight, fill = sex)) +
+  geom_col(position = "dodge") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+  labs(
+    title = "Mean Body Weight by Species and Sex",
+    x     = "Species",
+    y     = "Mean Weight (g)",
+    fill  = "Sex"
+  )
+```

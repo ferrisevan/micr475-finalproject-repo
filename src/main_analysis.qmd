@@ -113,6 +113,8 @@ rodents_clean |>
   select(genus, species, species_label) |>
   distinct() |>
   arrange(species_label)
+
+view(rodents_clean)
 ```
 
 Identify the top 5 most common species to keep the plot readable.

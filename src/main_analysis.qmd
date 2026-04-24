@@ -84,3 +84,44 @@ rodents_clean <- rodents |>
 
 nrow(rodents_clean)
 ```
+
+## 5. Data Transformation and Species Labels
+
+Calculate the mean weight and average hindfoot length for each species, then rank them by how commonly they appear in the dataset.
+
+```{r}
+species_summary <- rodents_clean |>
+  group_by(species_id, genus, species) |>
+  summarise(
+    mean_weight    = mean(weight),
+    mean_hindfoot  = mean(hindfoot_length),
+    count          = n(),
+    .groups        = "drop"
+  ) |>
+  arrange(desc(count))
+
+species_summary
+```
+
+Create a clean species label by combining genus and species name into a string, and select only the columns we need for analysis. Check if the new column looks correct.
+
+```{r}
+rodents_clean <- rodents_clean |>
+  mutate(species_label = str_c(genus, species, sep = " "))
+
+rodents_clean |>
+  select(genus, species, species_label) |>
+  distinct() |>
+  arrange(species_label)
+```
+
+Identify the top 5 most common species to keep the plot readable.
+
+```{r}
+top5_species <- rodents_clean |>
+  count(species_label, sort = TRUE) |>
+  slice_head(n = 5) |>
+  pull(species_label)
+
+glimpse(top5_species)
+```

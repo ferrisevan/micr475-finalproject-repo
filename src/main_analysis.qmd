@@ -5,6 +5,8 @@ format: html
 editor: visual
 ---
 
+# Portal Project Rodent Study
+
 ## 1. Setup and Data Import
 
 Load the packages we need for data manipulation and visualization.

@@ -9,12 +9,10 @@ editor: visual
 
 ## 1. Setup and Data Import
 
-Load the packages we need for data manipulation and visualization.
+Load the tidyverse package we need for data manipulation and visualization.
 
 ```{r}
 library(tidyverse)
-library(readr)
-library(ggplot2)
 ```
 
 Read in the two CSV files from the data folder, and take a look at each table.

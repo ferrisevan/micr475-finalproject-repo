@@ -72,7 +72,7 @@ rodents <- surveys_joined |>
 nrow(rodents)
 ```
 
-Remove rows missing weight, hindfoot length, or sex since these are the key variables we will be analyzing, then check how many rows remain after cleaning.
+Remove rows missing weight, hindfoot length, or sex since these are key variables we could analyze, then check how many rows remain after cleaning.
 
 ```{r}
 rodents_clean <- rodents |>

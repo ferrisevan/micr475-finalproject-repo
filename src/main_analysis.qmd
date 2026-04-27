@@ -18,8 +18,8 @@ library(ggplot2)
 Read in the two CSV files from the data folder, and take a look at each table.
 
 ```{r}
-surveys <- read_csv("data/surveys.csv")
-species <- read_csv("data/species.csv")
+surveys <- read_csv("../data/surveys.csv")
+species <- read_csv("../data/species.csv")
 
 glimpse(surveys)
 glimpse(species)
@@ -132,7 +132,7 @@ glimpse(top5_species)
 
 Plot weight distributions for the top 5 species using a density plot.
 
-Density represents the probability of observing a rodent at a given weight. Peaks show where most individuals cluster, wider curves mean more variation.
+Density shows the probability of observing a rodent at a given weight. Peaks show where most individuals cluster, wider curves mean more variation.
 
 ```{r}
 rodents_clean |>
@@ -149,9 +149,9 @@ rodents_clean |>
   )
 ```
 
-## 7. Visualization 2 — Mean Weight Over Time by Species
+## 7. Visualization 2 - Mean Weight Over Time by Species
 
-Calculate mean weight per year and plot trends over time to examine how rodent body weight has changed across the study period
+Calculate mean weight per year and trends over time to see how rodent body weight has changed across the study period.
 
 ```{r}
 rodents_clean |>
@@ -172,9 +172,9 @@ rodents_clean |>
   )
 ```
 
-## 8. Visualization 3 — Mean Weight by Species and Sex
+## 8. Visualization 3 - Mean Weight by Species and Sex
 
-Compare mean body weight between male and female rodents across the top 5 most common species to examine whether weight differs by sex
+Compare mean body weight between male and female rodents across the top 5 most common species to see whether weight differs by sex.
 
 ```{r}
 rodents_clean |>

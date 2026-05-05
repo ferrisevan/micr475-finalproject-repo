@@ -128,9 +128,7 @@ top5_species <- rodents_clean |>
 glimpse(top5_species)
 ```
 
-## 6. Visualization 1 - Weight Distribution by Species
-
-Plot weight distributions for the top 5 species using a density plot.
+## 6. Visualization 1 -How is body weight distributed across the top 5 most common rodent species?
 
 Density shows the probability of observing a rodent at a given weight. Peaks show where most individuals cluster, wider curves mean more variation.
 
@@ -149,7 +147,7 @@ rodents_clean |>
   )
 ```
 
-## 7. Visualization 2 - Mean Weight Over Time by Species
+## 7. Visualization 2 - How has mean rodent body weight changed over time by species?
 
 Calculate mean weight per year and trends over time to see how rodent body weight has changed across the study period.
 
@@ -172,7 +170,7 @@ rodents_clean |>
   )
 ```
 
-## 8. Visualization 3 - Mean Weight by Species and Sex
+## 8. Visualization 3 - Does mean body weight differ between male and female rodents across species?
 
 Compare mean body weight between male and female rodents across the top 5 most common species to see whether weight differs by sex.
 
@@ -194,4 +192,72 @@ rodents_clean |>
     y     = "Mean Weight (g)",
     fill  = "Sex"
   )
+```
+
+## 9. Visualization 4 - How is hindfoot length distributed across the top 5 most common species?
+
+Plot hindfoot distributions for the top 5 species using a density plot.
+
+```{r}
+rodents_clean |>
+  filter(species_label %in% top5_species) |>
+  mutate(species_label = fct_reorder(species_label, hindfoot_length, median)) |>
+  ggplot(aes(x = hindfoot_length, fill = species_label, color = species_label)) +
+  geom_density(alpha = 0.4) +
+  labs(
+    title = "Hindfoot Length Distribution by Species",
+    x     = "Hindfoot Length (mm)",
+    y     = "Density",
+    fill  = "Species",
+    color = "Species"
+  )
+
+```
+
+## 10. Visualization 5 - How has mean hindfoot length changed over time by species?
+
+Calculate mean hindfoot length per year and plot trends over time to examine how hindfoot length has changed across the study.
+
+```{r}
+rodents_clean |>
+  group_by(year, species_label) |>
+  summarise(
+    mean_hindfoot = mean(hindfoot_length),
+    .groups       = "drop"
+  ) |>
+  filter(species_label %in% top5_species) |>
+  ggplot(aes(x = year, y = mean_hindfoot, color = species_label)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Mean Hindfoot Length Over Time by Species",
+    x     = "Year",
+    y     = "Mean Hindfoot Length (mm)",
+    color = "Species"
+  )
+```
+
+## 11. Visualization 6 - Does mean hindfoot length differ between male and female rodents across species?
+
+Compare mean hindfoot length between male and female rodents across the top 5 most common species to see if hindfoot length differs by sex.
+
+```{r}
+rodents_clean |>
+  filter(species_label %in% top5_species) |>
+  group_by(species_label, sex) |>
+  summarise(
+    mean_hindfoot = mean(hindfoot_length),
+    .groups       = "drop"
+  ) |>
+  mutate(species_label = fct_reorder(species_label, mean_hindfoot, max)) |>
+  ggplot(aes(x = species_label, y = mean_hindfoot, fill = sex)) +
+  geom_col(position = "dodge") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+  labs(
+    title = "Mean Hindfoot Length by Species and Sex",
+    x     = "Species",
+    y     = "Mean Hindfoot Length (mm)",
+    fill  = "Sex"
+  ) +
+  theme_minimal()
 ```
